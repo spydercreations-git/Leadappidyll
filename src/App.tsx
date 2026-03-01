@@ -159,14 +159,14 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
       {/* Logout Button - Bottom Left */}
       <button
         onClick={onLogout}
-        className="fixed bottom-4 left-4 flex items-center space-x-1.5 px-3 py-1.5 bg-brand-yellow/20 border border-brand-yellow-hover rounded-lg text-[11px] font-medium text-text-dark hover:bg-brand-yellow/30 transition-all z-40"
+        className="fixed bottom-4 left-4 flex items-center space-x-1.5 px-3 py-1.5 bg-brand-yellow border border-brand-yellow-hover rounded-lg text-[11px] font-medium text-text-dark hover:bg-brand-yellow-hover transition-all z-40 shadow-sm"
       >
         <LogOut className="w-3 h-3" />
         <span>Logout</span>
       </button>
 
       {/* Header Section */}
-      <header className="pt-12 md:pt-16 pb-8 md:pb-12 px-4 md:px-6 text-center max-w-4xl mx-auto relative">
+      <header className="pt-8 md:pt-16 pb-6 md:pb-12 px-4 md:px-6 text-center max-w-4xl mx-auto relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -175,12 +175,12 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
           <img 
             src="https://res.cloudinary.com/dxd79mrse/image/upload/v1772161578/Idyll_Productions_Black_ty3r3d.png" 
             alt="Idyll Productions Logo" 
-            className="h-16 md:h-24 mx-auto mb-4 md:mb-6"
+            className="h-12 md:h-24 mx-auto mb-3 md:mb-6"
           />
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight text-text-dark mb-3 md:mb-4 px-4">
+          <h1 className="text-xl md:text-4xl lg:text-5xl font-bold tracking-tight text-text-dark mb-2 md:mb-4 px-2">
             Idyll Productions – <span className="text-text-muted font-light italic">Cold Email Generator</span>
           </h1>
-          <p className="text-sm md:text-lg text-text-muted max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-xs md:text-lg text-text-muted max-w-2xl mx-auto leading-relaxed px-2">
             Generate high-impact, hook-based cold emails for video editing outreach. 
             Personalize, edit, and copy instantly.
           </p>
@@ -188,8 +188,8 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
       </header>
 
       {/* Input Section */}
-      <section className="max-w-4xl mx-auto px-4 md:px-6 mb-12 md:mb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      <section className="max-w-4xl mx-auto px-4 md:px-6 mb-8 md:mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
           <motion.div 
             className="relative group"
             initial={{ opacity: 0, x: -20 }}
@@ -204,7 +204,7 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
               placeholder="Client Name (e.g. Alex)"
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 md:py-4 bg-white border border-black/5 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 focus:border-brand-yellow transition-all text-base md:text-lg placeholder:text-text-muted/40"
+              className="w-full pl-12 pr-4 py-3 md:py-4 bg-white border border-black/5 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 focus:border-brand-yellow transition-all text-sm md:text-lg placeholder:text-text-muted/40"
             />
             {clientName && (
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-yellow-hover uppercase tracking-widest">
@@ -227,20 +227,20 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
               placeholder="Search templates..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 md:py-4 bg-white border border-black/5 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 focus:border-brand-yellow transition-all text-base md:text-lg placeholder:text-text-muted/40"
+              className="w-full pl-12 pr-4 py-3 md:py-4 bg-white border border-black/5 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 focus:border-brand-yellow transition-all text-sm md:text-lg placeholder:text-text-muted/40"
             />
           </motion.div>
         </div>
       </section>
 
       {/* Category Tabs */}
-      <nav className="max-w-6xl mx-auto px-4 md:px-6 mb-8 md:mb-12 overflow-x-auto no-scrollbar">
+      <nav className="max-w-6xl mx-auto px-4 md:px-6 mb-6 md:mb-12 overflow-x-auto no-scrollbar">
         <div className="flex justify-start md:justify-center space-x-2 min-w-max pb-2">
           {categories.map((cat) => (
             <button
               key={cat.name}
               onClick={() => setActiveCategory(cat.name)}
-              className={`flex items-center space-x-2 px-4 md:px-6 py-2 md:py-3 rounded-full text-xs md:text-sm font-medium transition-all whitespace-nowrap ${
+              className={`flex items-center space-x-1.5 md:space-x-2 px-3 md:px-6 py-2 md:py-3 rounded-full text-xs md:text-sm font-medium transition-all whitespace-nowrap ${
                 activeCategory === cat.name
                   ? 'bg-text-dark text-white shadow-lg'
                   : 'bg-white text-text-muted hover:bg-black/5 border border-black/5'
@@ -254,9 +254,9 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
       </nav>
 
       {/* Templates Grid */}
-      <main className="max-w-7xl mx-auto px-4 md:px-6 pb-24 md:pb-32">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 pb-20 md:pb-32">
         {filteredTemplates.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             <AnimatePresence mode="popLayout">
               {filteredTemplates.map((template, index) => (
                 <motion.div
@@ -269,61 +269,61 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
                   className="bg-white rounded-3xl border border-black/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col h-full"
                 >
                   {/* Card Header */}
-                  <div className="px-6 md:px-8 py-4 md:py-6 border-b border-black/5 flex justify-between items-center bg-white">
-                    <div className="flex-1">
+                  <div className="px-4 md:px-8 py-3 md:py-6 border-b border-black/5 flex justify-between items-center bg-white">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-text-muted/50">
+                        <span className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-bold text-text-muted/50">
                           {template.category}
                         </span>
-                        <span className="text-[10px] font-bold text-brand-yellow-hover bg-brand-yellow/20 px-2 py-0.5 rounded">
+                        <span className="text-[9px] md:text-[10px] font-bold text-brand-yellow-hover bg-brand-yellow/20 px-1.5 md:px-2 py-0.5 rounded">
                           #{template.id}
                         </span>
                       </div>
-                      <h3 className="text-lg md:text-xl font-semibold text-text-dark">{template.title}</h3>
+                      <h3 className="text-base md:text-xl font-semibold text-text-dark truncate">{template.title}</h3>
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-1 md:space-x-2 ml-2">
                       <button
                         onClick={() => toggleFavorite(template.id)}
-                        className={`p-2 rounded-xl transition-all ${
+                        className={`p-1.5 md:p-2 rounded-xl transition-all ${
                           favorites.includes(template.id)
                             ? 'text-brand-yellow-hover bg-brand-yellow/20'
                             : 'text-text-muted hover:text-brand-yellow-hover hover:bg-brand-yellow/10'
                         }`}
                         title={favorites.includes(template.id) ? "Remove from favorites" : "Add to favorites"}
                       >
-                        <Star className={`w-4 h-4 ${favorites.includes(template.id) ? 'fill-current' : ''}`} />
+                        <Star className={`w-3.5 h-3.5 md:w-4 md:h-4 ${favorites.includes(template.id) ? 'fill-current' : ''}`} />
                       </button>
                       <button
                         onClick={() => handleReset(template.id)}
-                        className="p-2 text-text-muted hover:text-text-dark hover:bg-black/5 rounded-xl transition-all"
+                        className="p-1.5 md:p-2 text-text-muted hover:text-text-dark hover:bg-black/5 rounded-xl transition-all"
                         title="Reset to default"
                       >
-                        <RotateCcw className="w-4 h-4" />
+                        <RotateCcw className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </button>
                       <button
                         onClick={() => setEditingId(editingId === template.id ? null : template.id)}
-                        className={`p-2 rounded-xl transition-all ${
+                        className={`p-1.5 md:p-2 rounded-xl transition-all ${
                           editingId === template.id 
                             ? 'bg-brand-yellow text-text-dark' 
                             : 'text-text-muted hover:text-text-dark hover:bg-black/5'
                         }`}
                         title="Edit template"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </button>
                     </div>
                   </div>
 
                   {/* Card Body */}
-                  <div className="p-6 md:p-8 flex-grow flex flex-col">
+                  <div className="p-4 md:p-8 flex-grow flex flex-col">
                     {editingId === template.id ? (
                       <textarea
                         value={template.defaultText}
                         onChange={(e) => handleTemplateEdit(template.id, e.target.value)}
-                        className="w-full h-64 p-4 bg-bg-beige border border-black/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-yellow/30 font-mono text-sm leading-relaxed resize-none"
+                        className="w-full h-48 md:h-64 p-3 md:p-4 bg-bg-beige border border-black/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-yellow/30 font-mono text-xs md:text-sm leading-relaxed resize-none"
                       />
                     ) : (
-                      <div className="whitespace-pre-wrap text-text-dark leading-relaxed text-sm md:text-[15px] flex-grow">
+                      <div className="whitespace-pre-wrap text-text-dark leading-relaxed text-xs md:text-[15px] flex-grow">
                         {template.defaultText.split(/(\[NAME\])/g).map((part, i) => 
                           part === '[NAME]' ? (
                             <span key={i} className={clientName ? "text-text-dark font-bold bg-brand-yellow/20 px-1 rounded" : "text-text-muted/40 font-medium italic"}>
@@ -336,10 +336,10 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
                   </div>
 
                   {/* Card Footer */}
-                  <div className="px-6 md:px-8 py-4 md:py-6 bg-bg-beige/50 border-t border-black/5">
+                  <div className="px-4 md:px-8 py-3 md:py-6 bg-bg-beige/50 border-t border-black/5">
                     <button
                       onClick={() => handleCopy(template.id, template.defaultText)}
-                      className={`w-full py-4 rounded-2xl font-semibold text-sm flex items-center justify-center space-x-2 transition-all ${
+                      className={`w-full py-3 md:py-4 rounded-2xl font-semibold text-xs md:text-sm flex items-center justify-center space-x-2 transition-all ${
                         copiedId === template.id
                           ? 'bg-emerald-500 text-white shadow-emerald-200 shadow-lg'
                           : 'bg-brand-yellow text-text-dark hover:bg-brand-yellow-hover shadow-brand-yellow/20 shadow-lg active:scale-[0.98]'
@@ -404,8 +404,8 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
       </main>
 
       {/* Footer */}
-      <footer className="py-12 text-center border-t border-black/5 bg-white">
-        <p className="text-sm text-text-muted">
+      <footer className="py-8 md:py-12 text-center border-t border-black/5 bg-white">
+        <p className="text-xs md:text-sm text-text-muted px-4">
           &copy; {new Date().getFullYear()} Idyll Productions. Built for internal outreach.
         </p>
       </footer>

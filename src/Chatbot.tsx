@@ -44,8 +44,23 @@ export default function Chatbot() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,6 +78,18 @@ export default function Chatbot() {
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
+
+    // Check internet connection first
+    if (!navigator.onLine) {
+      const offlineMessage: Message = {
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: "⚠️ No internet connection. Please check your mobile data or WiFi and try again.",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, offlineMessage]);
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now(),
@@ -148,10 +175,16 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Chatbot error:', error);
+      
+      // Check if it's a network error
+      const isNetworkError = error instanceof TypeError && error.message.includes('fetch');
+      
       const errorMessage: Message = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: "Sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        content: isNetworkError 
+          ? "⚠️ No internet connection detected. Please check your mobile data or WiFi connection and try again."
+          : "Sorry, I'm having trouble connecting to the AI service right now. Please check your internet connection and try again in a moment.",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -177,7 +210,7 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-20 md:bottom-6 right-4 md:right-6 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-brand-yellow to-brand-yellow-hover text-text-dark rounded-full shadow-2xl hover:shadow-brand-yellow/50 transition-all flex items-center justify-center z-50 group"
+            className="fixed bottom-4 right-4 md:right-6 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-brand-yellow to-brand-yellow-hover text-text-dark rounded-full shadow-2xl hover:shadow-brand-yellow/50 transition-all flex items-center justify-center z-50 group"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -277,6 +310,15 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
 
             {/* Input */}
             <div className="p-3 md:p-4 bg-white border-t border-black/5 safe-bottom">
+              {/* Connection Status */}
+              {!isOnline && (
+                <div className="mb-2 px-2 py-1.5 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-[10px] text-red-700 text-center font-medium">
+                    ⚠️ No internet connection - Please connect to WiFi or mobile data
+                  </p>
+                </div>
+              )}
+              
               {/* Warning Note */}
               <div className="mb-2 md:mb-3 px-2">
                 <p className="text-[9px] md:text-[10px] text-yellow-700 text-center leading-tight">
