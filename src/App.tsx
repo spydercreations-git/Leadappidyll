@@ -5,11 +5,13 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Copy, Edit2, RotateCcw, Check, Search, User, Mail, Video, Rocket, Briefcase, Building2, LogOut, Star } from 'lucide-react';
+import { Copy, Edit2, RotateCcw, Check, Search, User, Mail, Video, Rocket, Briefcase, Building2, Star, MoreVertical, LogOut, Info } from 'lucide-react';
 import { TEMPLATES, EmailTemplate } from './templates';
 import LoginPage from './LoginPage';
 import WelcomePage from './WelcomePage';
 import Chatbot from './Chatbot';
+import AboutPage from './AboutPage';
+import OfflinePage from './OfflinePage';
 import { isAuthenticated, logout, initSecurityMeasures } from './auth';
 
 type Category = 'All' | 'Favorites' | 'Creators' | 'SaaS' | 'Agencies' | 'Business';
@@ -19,6 +21,21 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [username, setUsername] = useState('');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Check authentication on mount
   useEffect(() => {
@@ -64,6 +81,11 @@ export default function App() {
     return null; // Prevent flash of content
   }
 
+  // Show offline page if no internet
+  if (!isOnline) {
+    return <OfflinePage />;
+  }
+
   if (!isLoggedIn) {
     return <LoginPage onLogin={handleLogin} />;
   }
@@ -82,6 +104,8 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showMenu, setShowMenu] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const [favorites, setFavorites] = useState<number[]>(() => {
     const saved = localStorage.getItem('favoriteTemplates');
     return saved ? JSON.parse(saved) : [];
@@ -156,14 +180,58 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
 
   return (
     <div className="min-h-screen font-sans selection:bg-brand-yellow/30 relative">
-      {/* Logout Button - Bottom Left */}
-      <button
-        onClick={onLogout}
-        className="fixed bottom-4 left-4 flex items-center space-x-1.5 px-3 py-1.5 bg-brand-yellow border border-brand-yellow-hover rounded-lg text-[11px] font-medium text-text-dark hover:bg-brand-yellow-hover transition-all z-40 shadow-sm"
-      >
-        <LogOut className="w-3 h-3" />
-        <span>Logout</span>
-      </button>
+      {/* Menu Button - Top Right */}
+      <div className="fixed top-4 right-4 z-40">
+        <button
+          onClick={() => setShowMenu(!showMenu)}
+          className="p-2.5 bg-white border border-black/10 rounded-xl shadow-lg hover:shadow-xl transition-all"
+        >
+          <MoreVertical className="w-5 h-5 text-text-dark" />
+        </button>
+
+        {/* Dropdown Menu */}
+        <AnimatePresence>
+          {showMenu && (
+            <>
+              {/* Backdrop */}
+              <div 
+                className="fixed inset-0 z-30"
+                onClick={() => setShowMenu(false)}
+              />
+              
+              {/* Menu */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute right-0 mt-2 w-48 bg-white border border-black/10 rounded-2xl shadow-xl overflow-hidden z-40"
+              >
+                <button
+                  onClick={() => {
+                    setShowAbout(true);
+                    setShowMenu(false);
+                  }}
+                  className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-bg-beige transition-all text-left"
+                >
+                  <Info className="w-4 h-4 text-text-muted" />
+                  <span className="text-sm font-medium text-text-dark">About</span>
+                </button>
+                <div className="border-t border-black/5" />
+                <button
+                  onClick={() => {
+                    onLogout();
+                    setShowMenu(false);
+                  }}
+                  className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-red-50 transition-all text-left"
+                >
+                  <LogOut className="w-4 h-4 text-red-600" />
+                  <span className="text-sm font-medium text-red-600">Logout</span>
+                </button>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Header Section */}
       <header className="pt-8 md:pt-16 pb-6 md:pb-12 px-4 md:px-6 text-center max-w-4xl mx-auto relative">
@@ -423,6 +491,11 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
 
       {/* Chatbot */}
       <Chatbot />
+
+      {/* About Page Modal */}
+      <AnimatePresence>
+        {showAbout && <AboutPage onClose={() => setShowAbout(false)} />}
+      </AnimatePresence>
     </div>
   );
 }
