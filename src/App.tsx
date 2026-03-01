@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Copy, Edit2, RotateCcw, Check, Search, User, Mail, Video, Rocket, Briefcase, Building2, Star, MoreVertical, LogOut, Info } from 'lucide-react';
+import { Copy, Edit2, RotateCcw, Check, Search, User, Mail, Video, Rocket, Briefcase, Building2, Star, Menu, X, LogOut, Info } from 'lucide-react';
 import { TEMPLATES, EmailTemplate } from './templates';
 import LoginPage from './LoginPage';
 import WelcomePage from './WelcomePage';
@@ -181,13 +181,37 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="min-h-screen font-sans selection:bg-brand-yellow/30 relative">
       {/* Menu Button - Top Right */}
-      <div className="fixed top-4 right-4 z-40">
-        <button
+      <div className="absolute top-4 right-4 z-40">
+        <motion.button
           onClick={() => setShowMenu(!showMenu)}
-          className="p-2.5 bg-white border border-black/10 rounded-xl shadow-lg hover:shadow-xl transition-all"
+          className="p-2.5 hover:bg-black/5 rounded-xl transition-all"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
-          <MoreVertical className="w-5 h-5 text-text-dark" />
-        </button>
+          <AnimatePresence mode="wait">
+            {showMenu ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <X className="w-5 h-5 text-text-dark" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="menu"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Menu className="w-5 h-5 text-text-dark" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
 
         {/* Dropdown Menu */}
         <AnimatePresence>

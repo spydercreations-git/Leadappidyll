@@ -105,6 +105,9 @@ export default function Chatbot() {
     try {
       const apiKey = getNextApiKey();
       
+      console.log('Attempting to connect to Groq API...');
+      console.log('Online status:', navigator.onLine);
+      
       // Add timeout to detect connection issues
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
@@ -167,11 +170,15 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
 
       clearTimeout(timeoutId);
 
+      console.log('Response status:', response.status);
+
       if (!response.ok) {
         throw new Error(`API Error: ${response.status}`);
       }
 
       const data = await response.json();
+      
+      console.log('API response received successfully');
       
       if (data.error) {
         throw new Error(data.error.message || 'Failed to get response');
@@ -237,7 +244,6 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
             whileTap={{ scale: 0.95 }}
           >
             <MessageCircle className="w-6 h-6 md:w-7 md:h-7" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 bg-text-dark rounded-full animate-pulse" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -253,26 +259,29 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
             className="fixed bottom-0 md:bottom-6 right-0 md:right-6 w-full md:w-96 h-[100dvh] md:h-[600px] md:rounded-3xl bg-white shadow-2xl border-0 md:border border-black/10 flex flex-col z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-brand-yellow to-brand-yellow-hover text-text-dark px-4 md:px-6 py-3 md:py-4 flex items-center justify-between safe-top">
+            <div className="bg-gradient-to-r from-brand-yellow to-brand-yellow-hover text-text-dark px-4 md:px-6 pt-8 pb-4 md:pt-8 md:pb-5 flex items-center justify-between">
               <div className="flex items-center space-x-2 md:space-x-3">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-text-dark rounded-full flex items-center justify-center">
-                  <Bot className="w-5 h-5 md:w-6 md:h-6 text-brand-yellow" />
+                <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center">
+                  <Bot className="w-8 h-8 md:w-10 md:h-10 text-text-dark" />
                 </div>
                 <div>
                   <h3 className="font-bold text-base md:text-lg">Idyll Assistant</h3>
                   <p className="text-[10px] md:text-xs text-text-dark/70">Message Humanizer & Helper</p>
                 </div>
               </div>
-              <button
+              <motion.button
                 onClick={() => setIsOpen(false)}
                 className="p-1.5 md:p-2 hover:bg-text-dark/10 rounded-xl transition-all"
+                whileHover={{ rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.2 }}
               >
                 <X className="w-5 h-5" />
-              </button>
+              </motion.button>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-bg-beige/30">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3 md:space-y-4 bg-bg-beige/30">
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
@@ -280,25 +289,25 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
                   animate={{ opacity: 1, y: 0 }}
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`flex items-start space-x-2 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  <div className={`flex items-start space-x-2 md:space-x-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                    <div className={`w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
                       message.role === 'user' ? 'bg-text-dark' : 'bg-gradient-to-br from-brand-yellow to-brand-yellow-hover'
                     }`}>
                       {message.role === 'user' ? (
-                        <UserIcon className="w-4 h-4 text-brand-yellow" />
+                        <UserIcon className="w-4 h-4 md:w-5 md:h-5 text-brand-yellow" />
                       ) : (
-                        <Bot className="w-4 h-4 text-text-dark" />
+                        <Bot className="w-4 h-4 md:w-5 md:h-5 text-text-dark" />
                       )}
                     </div>
                     <div>
-                      <div className={`rounded-2xl px-4 py-3 ${
+                      <div className={`rounded-2xl px-3 py-2.5 md:px-4 md:py-3 ${
                         message.role === 'user' 
                           ? 'bg-text-dark text-white' 
                           : 'bg-white border border-black/5 text-text-dark'
                       }`}>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                        <p className="text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
                       </div>
-                      <p className="text-[10px] text-text-muted/50 mt-1 px-2">
+                      <p className="text-[10px] text-text-muted/50 mt-1.5 px-2">
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
@@ -312,11 +321,11 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
                   animate={{ opacity: 1 }}
                   className="flex justify-start"
                 >
-                  <div className="flex items-start space-x-2 max-w-[85%]">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-yellow to-brand-yellow-hover flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-text-dark" />
+                  <div className="flex items-start space-x-2 md:space-x-3 max-w-[85%]">
+                    <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-brand-yellow to-brand-yellow-hover flex items-center justify-center">
+                      <Bot className="w-4 h-4 md:w-5 md:h-5 text-text-dark" />
                     </div>
-                    <div className="bg-white border border-black/5 rounded-2xl px-4 py-3">
+                    <div className="bg-white border border-black/5 rounded-2xl px-3 py-2.5 md:px-4 md:py-3">
                       <div className="flex space-x-2">
                         <div className="w-2 h-2 bg-text-muted/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                         <div className="w-2 h-2 bg-text-muted/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -331,10 +340,10 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
             </div>
 
             {/* Input */}
-            <div className="p-3 md:p-4 bg-white border-t border-black/5 safe-bottom">
+            <div className="p-3 md:p-4 bg-white border-t border-black/5 safe-bottom space-y-2.5 md:space-y-3">
               {/* Connection Status */}
               {!isOnline && (
-                <div className="mb-2 px-2 py-1.5 bg-red-50 border border-red-200 rounded-lg">
+                <div className="px-2 py-1.5 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-[10px] text-red-700 text-center font-medium">
                     ⚠️ No internet connection - Please connect to WiFi or mobile data
                   </p>
@@ -342,7 +351,7 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
               )}
               
               {/* Warning Note */}
-              <div className="mb-2 md:mb-3 px-2">
+              <div className="px-2">
                 <p className="text-[9px] md:text-[10px] text-yellow-700 text-center leading-tight">
                   Emergency AI Only - Max 20 messages/day. If not working, check your internet connection.
                 </p>
