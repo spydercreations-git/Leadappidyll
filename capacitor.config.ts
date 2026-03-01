@@ -5,6 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Idyll Email Generator',
   webDir: 'dist',
   server: {
+    url: 'https://leadidyll.netlify.app',
+    cleartext: true,
     androidScheme: 'https'
   },
   android: {
