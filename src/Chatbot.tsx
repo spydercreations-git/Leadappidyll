@@ -104,6 +104,11 @@ export default function Chatbot() {
 
     try {
       const apiKey = getNextApiKey();
+      
+      // Add timeout to detect connection issues
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -156,8 +161,15 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
           ],
           temperature: 0.7,
           max_tokens: 1000
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
 
       const data = await response.json();
       
@@ -173,18 +185,28 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chatbot error:', error);
       
-      // Check if it's a network error
-      const isNetworkError = error instanceof TypeError && error.message.includes('fetch');
+      let errorContent = "Sorry, I'm having trouble connecting to the AI service right now. Please try again in a moment.";
+      
+      // Check specific error types
+      if (error.name === 'AbortError') {
+        errorContent = "⚠️ Request timed out. Your internet connection might be slow. Please check your connection and try again.";
+      } else if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+        errorContent = "⚠️ Cannot reach the AI service. Please check your internet connection (WiFi or mobile data) and try again.";
+      } else if (error.message?.includes('API Error: 429')) {
+        errorContent = "⚠️ Too many requests. Please wait a moment and try again.";
+      } else if (error.message?.includes('API Error: 401')) {
+        errorContent = "⚠️ Authentication error. Please contact support.";
+      } else if (!navigator.onLine) {
+        errorContent = "⚠️ No internet connection detected. Please check your WiFi or mobile data.";
+      }
       
       const errorMessage: Message = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: isNetworkError 
-          ? "⚠️ No internet connection detected. Please check your mobile data or WiFi connection and try again."
-          : "Sorry, I'm having trouble connecting to the AI service right now. Please check your internet connection and try again in a moment.",
+        content: errorContent,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -322,7 +344,7 @@ Always keep responses clear, natural, and human sounding. Avoid sounding like an
               {/* Warning Note */}
               <div className="mb-2 md:mb-3 px-2">
                 <p className="text-[9px] md:text-[10px] text-yellow-700 text-center leading-tight">
-                  Emergency AI Only - Max 20 messages/day. Please use different AI for regular tasks.
+                  Emergency AI Only - Max 20 messages/day. If not working, check your internet connection.
                 </p>
               </div>
               
