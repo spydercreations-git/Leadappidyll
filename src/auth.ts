@@ -24,7 +24,8 @@ const USERS = [
   { u: hashCredential('void'), p: hashCredential('@idyll1') },
   { u: hashCredential('smita'), p: hashCredential('@idyll1') },
   { u: hashCredential('snow'), p: hashCredential('@idyll1') },
-  { u: hashCredential('zada'), p: hashCredential('@idyll1') }
+  { u: hashCredential('zada'), p: hashCredential('@idyll1') },
+  { u: hashCredential('vishal'), p: hashCredential('@idyll1') }
 ];
 
 // Session key

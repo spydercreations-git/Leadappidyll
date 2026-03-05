@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, ArrowRight, Video, Mail, Zap, LogOut } from 'lucide-react';
+import { Sparkles, ArrowRight, Video, Mail, Zap, LogOut, Megaphone } from 'lucide-react';
 
 interface WelcomePageProps {
   onContinue: () => void;
@@ -13,8 +13,26 @@ interface WelcomePageProps {
   username: string;
 }
 
+interface Announcement {
+  title: string;
+  description: string;
+  enabled: boolean;
+}
+
 export default function WelcomePage({ onContinue, onLogout, username }: WelcomePageProps) {
   const [progress, setProgress] = useState(0);
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null);
+
+  // Load announcement from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('adminAnnouncement');
+    if (saved) {
+      const data = JSON.parse(saved);
+      if (data.enabled && data.title && data.description) {
+        setAnnouncement(data);
+      }
+    }
+  }, []);
 
   // Get greeting based on time of day
   const getGreeting = () => {
@@ -127,6 +145,32 @@ export default function WelcomePage({ onContinue, onLogout, username }: WelcomeP
             <p className="text-sm text-text-muted">{features[2].description}</p>
           </motion.div>
         </motion.div>
+
+        {/* Announcement Card */}
+        {announcement && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            className="mb-6 md:mb-12 px-2 md:px-0"
+          >
+            <div className="bg-gradient-to-r from-brand-yellow/20 to-brand-yellow-hover/20 border-2 border-brand-yellow/30 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg">
+              <div className="flex items-start space-x-3">
+                <div className="bg-brand-yellow rounded-lg p-2 flex-shrink-0">
+                  <Megaphone className="w-5 h-5 md:w-6 md:h-6 text-text-dark" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-base md:text-xl font-bold text-text-dark mb-1 md:mb-2">
+                    {announcement.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-text-dark/80 leading-relaxed">
+                    {announcement.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Progress Bar */}
         <motion.div

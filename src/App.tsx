@@ -5,16 +5,17 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Copy, Edit2, RotateCcw, Check, Search, User, Mail, Video, Rocket, Briefcase, Building2, Star, Menu, X, LogOut, Info } from 'lucide-react';
+import { Copy, Edit2, RotateCcw, Check, Search, User, Mail, Video, Rocket, Briefcase, Building2, Star, Menu, X, LogOut, Info, Sparkles, Shield } from 'lucide-react';
 import { TEMPLATES, EmailTemplate } from './templates';
 import LoginPage from './LoginPage';
 import WelcomePage from './WelcomePage';
-import Chatbot from './Chatbot';
 import AboutPage from './AboutPage';
 import OfflinePage from './OfflinePage';
+import PromptMaster from './PromptMaster';
+import AdminPanel from './AdminPanel';
 import { isAuthenticated, logout, initSecurityMeasures } from './auth';
 
-type Category = 'All' | 'Favorites' | 'Creators' | 'SaaS' | 'Agencies' | 'Business';
+type Category = 'All' | 'Favorites' | 'Prompt Master' | 'Creators' | 'SaaS' | 'Agencies' | 'Business';
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -106,6 +107,7 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showMenu, setShowMenu] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
   const [favorites, setFavorites] = useState<number[]>(() => {
     const saved = localStorage.getItem('favoriteTemplates');
     return saved ? JSON.parse(saved) : [];
@@ -172,11 +174,72 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
   const categories: { name: Category; icon: React.ReactNode }[] = [
     { name: 'All', icon: <Mail className="w-4 h-4" /> },
     { name: 'Favorites', icon: <Star className="w-4 h-4" /> },
+    { name: 'Prompt Master', icon: <Sparkles className="w-4 h-4" /> },
     { name: 'Creators', icon: <Video className="w-4 h-4" /> },
     { name: 'SaaS', icon: <Rocket className="w-4 h-4" /> },
     { name: 'Agencies', icon: <Briefcase className="w-4 h-4" /> },
     { name: 'Business', icon: <Building2 className="w-4 h-4" /> },
   ];
+
+  // Show Prompt Master if that category is selected
+  if (activeCategory === 'Prompt Master') {
+    return (
+      <div className="min-h-screen font-sans selection:bg-brand-yellow/30 relative">
+        {/* Back Button */}
+        <div className="pt-4 md:pt-6 px-4 pb-0">
+          <button
+            onClick={() => setActiveCategory('All')}
+            className="px-4 py-2 bg-white border border-black/10 rounded-xl shadow-sm hover:shadow-md transition-all text-sm font-medium text-text-dark"
+          >
+            ← Back to Templates
+          </button>
+        </div>
+
+        <PromptMaster />
+
+        {/* ChatGPT Link Button */}
+        <a
+          href="chatgpt://"
+          onClick={(e) => {
+            // Try to open app first, fallback to web
+            const appLink = 'chatgpt://';
+            const webLink = 'https://chatgpt.com/';
+            
+            // For mobile, try app link
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+              window.location.href = appLink;
+              // Fallback to web after short delay if app doesn't open
+              setTimeout(() => {
+                window.open(webLink, '_blank');
+              }, 500);
+              e.preventDefault();
+            } else {
+              // Desktop: just open web
+              window.open(webLink, '_blank');
+              e.preventDefault();
+            }
+          }}
+          className="fixed bottom-6 right-6 z-50 hover:scale-110 transition-transform cursor-pointer"
+        >
+          <img
+            src="/Chat Gpt Logo.png"
+            alt="ChatGPT"
+            className="w-14 h-14 md:w-16 md:h-16 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+          />
+        </a>
+
+        {/* About Page Modal */}
+        <AnimatePresence>
+          {showAbout && <AboutPage onClose={() => setShowAbout(false)} />}
+        </AnimatePresence>
+
+        {/* Admin Panel Modal */}
+        <AnimatePresence>
+          {showAdmin && <AdminPanel onClose={() => setShowAdmin(false)} />}
+        </AnimatePresence>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen font-sans selection:bg-brand-yellow/30 relative">
@@ -230,6 +293,17 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
                 exit={{ opacity: 0, y: -10 }}
                 className="absolute right-0 mt-2 w-48 bg-white border border-black/10 rounded-2xl shadow-xl overflow-hidden z-40"
               >
+                <button
+                  onClick={() => {
+                    setShowAdmin(true);
+                    setShowMenu(false);
+                  }}
+                  className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-bg-beige transition-all text-left"
+                >
+                  <Shield className="w-4 h-4 text-brand-yellow-hover" />
+                  <span className="text-sm font-medium text-text-dark">Admin</span>
+                </button>
+                <div className="border-t border-black/5" />
                 <button
                   onClick={() => {
                     setShowAbout(true);
@@ -513,12 +587,45 @@ function MainApp({ onLogout }: { onLogout: () => void }) {
         }
       `}</style>
 
-      {/* Chatbot */}
-      <Chatbot />
+      {/* ChatGPT Link Button */}
+      <a
+        href="chatgpt://"
+        onClick={(e) => {
+          // Try to open app first, fallback to web
+          const appLink = 'chatgpt://';
+          const webLink = 'https://chatgpt.com/';
+          
+          // For mobile, try app link
+          if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            window.location.href = appLink;
+            // Fallback to web after short delay if app doesn't open
+            setTimeout(() => {
+              window.open(webLink, '_blank');
+            }, 500);
+            e.preventDefault();
+          } else {
+            // Desktop: just open web
+            window.open(webLink, '_blank');
+            e.preventDefault();
+          }
+        }}
+        className="fixed bottom-6 right-6 z-50 hover:scale-110 transition-transform cursor-pointer"
+      >
+        <img
+          src="/Chat Gpt Logo.png"
+          alt="ChatGPT"
+          className="w-14 h-14 md:w-16 md:h-16 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+        />
+      </a>
 
       {/* About Page Modal */}
       <AnimatePresence>
         {showAbout && <AboutPage onClose={() => setShowAbout(false)} />}
+      </AnimatePresence>
+
+      {/* Admin Panel Modal */}
+      <AnimatePresence>
+        {showAdmin && <AdminPanel onClose={() => setShowAdmin(false)} />}
       </AnimatePresence>
     </div>
   );
